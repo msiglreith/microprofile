@@ -499,53 +499,37 @@ extern "C"
 {
 #endif
 
-#if defined(MICROPROFILE_GPU_TIMERS_D3D12)
+#if defined MICROPROFILE_GPU_TIMERS_D3D12
 MICROPROFILE_API void MicroProfileGpuInitD3D12(void* pDevice,  uint32_t nNodeCount, void** pCommandQueues);
-MICROPROFILE_API void MicroProfileGpuShutdown();
 MICROPROFILE_API void MicroProfileSetCurrentNodeD3D12(uint32_t nNode);
 #endif
 
-#if defined(MICROPROFILE_GPU_TIMERS_VULKAN)
+#if defined MICROPROFILE_GPU_TIMERS_VULKAN
 #include <vulkan/vulkan.h>
 void MicroProfileGpuInitVulkan(VkDevice* pDevices, VkPhysicalDevice* pPhysicalDevices, VkQueue* pQueues, uint32_t* QueueFamily, uint32_t nNodeCount);
-MICROPROFILE_API void MicroProfileGpuShutdown();
 MICROPROFILE_API void MicroProfileSetCurrentNodeVulkan(uint32_t nNode);
 #endif
 
+#if defined MICROPROFILE_GPU_TIMERS_D3D11
+#define MICROPROFILE_D3D_MAX_QUERIES (8<<10)
+MICROPROFILE_API void MicroProfileGpuInitD3D11(void* pDevice, void* pDeviceContext);
+#endif
 
-MICROPROFILE_API void MicroProfileDumpFile(const char* pHtml, const char* pCsv, float fCpuSpike, float fGpuSpike);
-MICROPROFILE_API void MicroProfileDumpFileImmediately(const char* pHtml, const char* pCsv, void* pGpuContext);
-MICROPROFILE_API uint32_t MicroProfileWebServerPort();
+#if defined MICROPROFILE_GPU_TIMERS_GL
+#define MICROPROFILE_GL_MAX_QUERIES (8<<10)
+MICROPROFILE_API void MicroProfileGpuInitGL(void *(* loader)(const char *, void *), void *pUser);
+#endif
 
-#if MICROPROFILE_GPU_TIMERS
+MICROPROFILE_API void MicroProfileGpuShutdown();
 MICROPROFILE_API uint32_t MicroProfileGpuInsertTimeStamp(void* pContext);
 MICROPROFILE_API uint64_t MicroProfileGpuGetTimeStamp(uint32_t nKey);
 MICROPROFILE_API uint64_t MicroProfileTicksPerSecondGpu();
 MICROPROFILE_API int MicroProfileGetGpuTickReference(int64_t* pOutCPU, int64_t* pOutGpu);
 MICROPROFILE_API uint32_t MicroProfileGpuFlip(void*);
-MICROPROFILE_API void MicroProfileGpuShutdown();
-#else
-#define MicroProfileGpuInsertTimeStamp(a) 1
-#define MicroProfileGpuGetTimeStamp(a) 0
-#define MicroProfileTicksPerSecondGpu() 1
-#define MicroProfileGetGpuTickReference(a,b) 0
-#define MicroProfileGpuFlip(a) 0
-#define MicroProfileGpuShutdown() do{}while(0)
 
-#endif
-
-#if MICROPROFILE_GPU_TIMERS_D3D11
-#define MICROPROFILE_D3D_MAX_QUERIES (8<<10)
-MICROPROFILE_API void MicroProfileGpuInitD3D11(void* pDevice, void* pDeviceContext);
-MICROPROFILE_API void MicroProfileGpuShutdown();
-#endif
-
-#if MICROPROFILE_GPU_TIMERS_GL
-#define MICROPROFILE_GL_MAX_QUERIES (8<<10)
-MICROPROFILE_API void MicroProfileGpuInitGL();
-#endif
-
-
+MICROPROFILE_API void MicroProfileDumpFile(const char* pHtml, const char* pCsv, float fCpuSpike, float fGpuSpike);
+MICROPROFILE_API void MicroProfileDumpFileImmediately(const char* pHtml, const char* pCsv, void* pGpuContext);
+MICROPROFILE_API uint32_t MicroProfileWebServerPort();
 
 #if MICROPROFILE_USE_THREAD_NAME_CALLBACK
 MICROPROFILE_API const char* MicroProfileGetThreadName(char* pzName);
